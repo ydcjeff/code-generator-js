@@ -1,0 +1,52 @@
+{
+  "to_save": {
+    "description": "What do you want to save?",
+    "options": {
+      "models": {
+        "type": "checkbox",
+        "description": "This will save all the models."
+      },
+      "optimizers": {
+        "type": "checkbox",
+        "description": "This will save all the optimizers."
+      },
+      "schedulers": {
+        "type": "checkbox",
+        "description": "This will save all the LR schedulers."
+      },
+      "trainer": {
+        "type": "checkbox",
+        "description": "This will save trainer."
+      },
+      "evaluator": {
+        "type": "checkbox",
+        "description": "This will save evaluator."
+      }
+    }
+  },
+  "terminate_on_nan": {
+    "name": "terminate_on_nan",
+    "type": "checkbox",
+    "description": "Would you like to stop the training if there is Inf/NaN tensor found?"
+  },
+  "filename_prefix": {
+    "name": "filename_prefix",
+    "type": "text",
+    "description": "What prefix would you like to put in front of saved checkpoint file?"
+  },
+  "n_saved": {
+    "name": "n_saved",
+    "type": "number",
+    "description": "How many checkpoint file would you like to keep on disk?"
+  },
+  "dirname": {
+    "name": "dirname",
+    "type": "text",
+    "description": "Where would you like to save the checkpoint?"
+  },
+  "limit_sec": {
+    "name": "limit_sec",
+    "type": "number",
+    "description": "How long do you want to run for the training and then terminate?"
+  }
+}
