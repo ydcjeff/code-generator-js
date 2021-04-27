@@ -11,6 +11,6 @@ export function saveConfig(key, value) {
 }
 
 export function getTemplateFileNames() {
-  const modules = import.meta.glob('./templates/**/*.{py,md,txt,json}')
+  const modules = import.meta.glob('./templates/**/*.{py,md,txt,json}?raw')
   return Object.keys(modules).map((value) => value.replace('./templates/', ''))
 }
