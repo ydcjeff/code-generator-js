@@ -4,8 +4,13 @@ export const store = reactive({
   config: {}
 })
 
-export default function saveConfig(key, value) {
+export function saveConfig(key, value) {
   if (store.config[key] === undefined || store.config[key] !== value) {
     store.config[key] = value
   }
+}
+
+export function getTemplateFileNames() {
+  const modules = import.meta.glob('./templates/**/*.{py,md,txt,json}')
+  return Object.keys(modules).map((value) => value.replace('./templates/', ''))
 }

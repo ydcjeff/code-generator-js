@@ -21,7 +21,7 @@
 export default {
   data() {
     return {
-      width: 50,
+      width: 40,
       isDragging: false
     }
   },
@@ -49,7 +49,6 @@ export default {
 <style scoped>
 .split-pane {
   display: flex;
-  height: 100%;
 }
 .split-pane.dragging {
   cursor: ew-resize;
@@ -61,7 +60,6 @@ export default {
 .left,
 .right {
   position: relative;
-  height: 100%;
 }
 .left {
   border-right: 1px solid var(--c-white-dark);

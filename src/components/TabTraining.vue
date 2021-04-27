@@ -10,7 +10,7 @@
 <script>
 import ConfigComponent from './configurations/ConfigComponent.vue'
 import trainingConfig from '../metadata/training.json'
-import saveConfig from '../store'
+import { saveConfig } from '../store'
 
 export default {
   components: {

@@ -2,10 +2,10 @@
   <nav-bar />
   <split-pane>
     <template #left>
-      <left-pane />
+      <pane-left />
     </template>
     <template #right>
-      <right-pane />
+      <pane-right />
     </template>
   </split-pane>
   <footer class="px-6 py-12 text-center text-sm border-t">
@@ -17,15 +17,15 @@
 <script>
 import NavBar from './components/NavBar.vue'
 import SplitPane from './components/PaneSplit.vue'
-import LeftPane from './components/PaneLeft.vue'
-import RightPane from './components/PaneRight.vue'
+import PaneRight from './components/PaneRight.vue'
+import PaneLeft from './components/PaneLeft.vue'
 
 export default {
   components: {
     NavBar,
     SplitPane,
-    LeftPane,
-    RightPane
+    PaneRight,
+    PaneLeft
   }
 }
 </script>

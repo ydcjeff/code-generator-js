@@ -64,7 +64,7 @@
 <script>
 import vision from '../metadata/models/vision.json'
 import text from '../metadata/models/text.json'
-import saveConfig from '../store'
+import { saveConfig } from '../store'
 
 export default {
   data() {

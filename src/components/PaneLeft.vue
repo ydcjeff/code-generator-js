@@ -65,7 +65,6 @@ export default {
   background-color: var(--c-white-light);
 }
 .left-pane-contexts {
-  height: 100vh;
   overflow: auto;
 }
 </style>

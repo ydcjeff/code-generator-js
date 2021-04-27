@@ -53,7 +53,7 @@
 <script>
 import { ref } from 'vue'
 import handlers from '../metadata/handlers.json'
-import saveConfig from '../store'
+import { saveConfig } from '../store'
 const { to_save, ...restHandlers } = handlers
 
 export default {

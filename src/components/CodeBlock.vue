@@ -1,9 +1,9 @@
 <template>
   <div class="code-block-wrapper">
     <div :class="className">
-      <pre><code v-html="highlightCode"></code></pre>
+      <pre :class="className"><code :class="className" v-html="highlightCode"></code></pre>
       <div class="line-numbers-wrapper">
-        <template v-for="i in getlineNumbers()" :key="i">
+        <template v-for="i in getlineNumbers" :key="i">
           <span class="line-numbers">{{ i }}</span>
           <br />
         </template>
@@ -16,20 +16,23 @@
 import prism from 'prismjs'
 import 'prismjs/components/prism-json'
 import 'prismjs/components/prism-python'
+import 'prismjs/components/prism-markdown'
 import 'prismjs/themes/prism-tomorrow.css'
 
 export default {
-  data() {
-    return {
-      className: `language-${this.lang}`
-    }
-  },
   computed: {
+    className() {
+      if (this.lang === 'txt') {
+        return `language-markup`
+      }
+      return `language-${this.lang}`
+    },
     highlightCode() {
+      if (this.lang === 'txt') {
+        return prism.highlight(this.code, prism.languages['markup'], 'marktup')
+      }
       return prism.highlight(this.code, prism.languages[this.lang], this.lang)
-    }
-  },
-  methods: {
+    },
     getlineNumbers() {
       return this.code.split('\n').length
     }
@@ -64,7 +67,7 @@ div[class*='language-']::before {
 
 [class*='language-'] pre {
   position: relative;
-  margin: 0.85rem 0;
+  margin: 0;
   padding: 1.25rem 1.5rem;
   padding-left: 4.5rem;
   vertical-align: middle;
