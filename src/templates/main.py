@@ -1,4 +1,6 @@
-"""main entrypoint training."""
+"""
+main entrypoint training
+"""
 from argparse import ArgumentParser
 from datetime import datetime
 from pathlib import Path
@@ -20,6 +22,7 @@ from utils import (
     resume_from,
     setup_logging,
 )
+
 
 def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
     """function to be run by idist.Parallel context manager."""

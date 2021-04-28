@@ -19,9 +19,7 @@
 
 <script>
 import CodeBlock from './CodeBlock.vue'
-import { store, getTemplateFileNames } from '../store'
-import utils from '../templates/utils.py?raw'
-import reqs from '../templates/requirements.txt?raw'
+import { store, getTemplateFileNames, generateCode } from '../store'
 
 export default {
   components: {
@@ -36,12 +34,7 @@ export default {
   },
   computed: {
     formattedCode() {
-      if (this.currentTab.endsWith('.json')) {
-        return JSON.stringify(this.code, null, 2)
-      } else if (this.currentTab.endsWith('.txt')) {
-        return reqs
-      }
-      return '# h1'
+      return generateCode(this.currentTab)
     },
     getLang() {
       return this.currentTab.split('.')[1]

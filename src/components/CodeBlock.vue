@@ -1,7 +1,9 @@
 <template>
   <div class="code-block-wrapper">
     <div :class="className">
-      <pre :class="className"><code :class="className" v-html="highlightCode"></code></pre>
+      <pre
+        :class="className"
+      ><code :class="className" v-html="highlightCode"></code></pre>
       <div class="line-numbers-wrapper">
         <template v-for="i in getlineNumbers" :key="i">
           <span class="line-numbers">{{ i }}</span>
