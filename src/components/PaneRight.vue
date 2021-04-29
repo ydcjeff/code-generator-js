@@ -3,7 +3,7 @@
     <button
       v-for="tab in tabs"
       :key="tab"
-      class="tab"
+      class="right-pane-tab"
       :class="{ active: currentTab === tab }"
       @click="currentTab = tab"
     >
@@ -11,9 +11,9 @@
     </button>
   </div>
   <div class="right-pane-contexts">
-    <keep-alive>
-      <code-block :lang="getLang" :code="formattedCode"></code-block>
-    </keep-alive>
+    <KeepAlive>
+      <CodeBlock :lang="getLang" :code="formattedCode()" />
+    </KeepAlive>
   </div>
 </template>
 
@@ -32,10 +32,12 @@ export default {
       tabs: getTemplateFileNames()
     }
   },
-  computed: {
+  methods: {
     formattedCode() {
       return generateCode(this.currentTab)
-    },
+    }
+  },
+  computed: {
     getLang() {
       return this.currentTab.split('.')[1]
     }
@@ -48,19 +50,23 @@ export default {
   padding: 2px 0;
   border-bottom: 1px solid var(--c-white-dark);
 }
-.tab {
+.right-pane-tabs,
+.right-pane-contexts {
+  padding-right: 1.5rem;
+}
+.right-pane-tab {
+  cursor: pointer;
+  font-family: var(--font-family-base);
   text-align: center;
   border-radius: 4px;
   padding: 0.4rem 0.8rem;
   margin: 2px;
+  transition: background-color 0.1s ease-in;
 }
-.tab:hover {
-  background-color: var(--c-white-dark);
-}
-.tab:focus {
-  outline: none;
-}
+.right-pane-tab:hover,
 .active {
-  background-color: var(--c-white-light);
+  background-color: var(--c-brand-red);
+  color: var(--c-white-light);
+  transition: background-color 0.25s ease-in-out;
 }
 </style>

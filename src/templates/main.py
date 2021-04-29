@@ -1,17 +1,16 @@
-"""
-main entrypoint training
-"""
+"""main entrypoint training."""
+#%% imports
 from argparse import ArgumentParser
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import ignite.distributed as idist
-from config import get_default_parser
-from datasets import get_datasets
 from ignite.engine.events import Events
 from ignite.metrics import Accuracy, Loss
 from ignite.utils import manual_seed
+
+from datasets import get_datasets
 from trainers import create_trainers
 from utils import (
     get_handlers,
@@ -23,7 +22,7 @@ from utils import (
     setup_logging,
 )
 
-
+#%% run
 def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
     """function to be run by idist.Parallel context manager."""
 
@@ -74,7 +73,6 @@ def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
     # ------------------------------------------
 
     device = idist.device()
-    config.num_iters_per_epoch = len(train_dataloader)
     model, optimizer, loss_fn, lr_scheduler = initialize(config=config)
 
     # -----------------------------
@@ -128,7 +126,7 @@ def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
         output_names=None,
     )
 
-    # setup ignite logger only on rank 0
+    # setup experiment tracking logger only on rank 0
     if rank == 0:
         logger_handler = get_logger(
             config=config, trainer=trainer, evaluator=evaluator, optimizers=optimizer
@@ -197,7 +195,7 @@ def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
     if best_model_handler is not None:
         logger.info("Last and best checkpoint: %s", best_model_handler.last_checkpoint)
 
-
+#%% main
 def main():
     parser = ArgumentParser(parents=[get_default_parser()])
     config = parser.parse_args()

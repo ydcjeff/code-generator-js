@@ -12,11 +12,10 @@
         :value="key"
         v-model="to_save[key]"
         @change="saveConfig('to_save', to_save)"
-        placeholder="Please fill out this field."
       />
       <label :for="key">{{ titleCase(key) }} ({{ value.description }})</label>
     </div>
-    <div v-for="(h, index) in restHandlers" :key="index">
+    <div v-for="(h, index) in restHandlers" :key="index" class="inputs-wrapper">
       <template v-if="h.type === 'checkbox'">
         <input
           :id="h.name"
@@ -29,12 +28,13 @@
       <template v-else-if="h.type === 'number'">
         <label :for="h.name">{{ h.description }}</label>
         <input
+          min="0"
           :id="h.name"
           :type="h.type"
           v-model.number="restHandlersValue[h.name]"
           @change="saveConfig(h.name, restHandlersValue[h.name])"
-          placeholder="Please fill out this field."
         />
+        <span class="expand"></span>
       </template>
       <template v-else>
         <label :for="h.name">{{ h.description }}</label>
@@ -43,8 +43,8 @@
           :type="h.type"
           v-model.trim="restHandlersValue[h.name]"
           @change="saveConfig(h.name, restHandlersValue[h.name])"
-          placeholder="Please fill out this field."
         />
+        <span class="expand"></span>
       </template>
     </div>
   </div>
@@ -79,15 +79,45 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .handlers {
-  margin: 1.5rem;
-  padding: 1.5rem;
+  padding: 0 1rem;
 }
 .saving {
-  margin: 1rem;
+  margin: 0.75rem;
 }
 input {
-  margin-right: 0.5rem !important;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size);
+}
+input[type='text'],
+input[type='number'] {
+  border-radius: 3px 3px 0 0;
+  border: 1px solid var(--c-white-light);
+  background: var(--c-white-light);
+  padding: 0.5rem 1rem;
+  width: 100%;
+}
+.inputs-wrapper {
+  position: relative;
+}
+input[type='text'] ~ .expand,
+input[type='number'] ~ .expand {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-bottom: 2px solid var(--c-brand-red);
+  transform: scaleX(0);
+  transition: transform 0.25s ease-in-out;
+}
+input[type='text']:focus,
+input[type='number']:focus {
+  outline: none;
+  background: var(--c-white);
+}
+input[type='text']:focus ~ .expand,
+input[type='number']:focus ~ .expand {
+  transform: scaleX(1);
 }
 </style>

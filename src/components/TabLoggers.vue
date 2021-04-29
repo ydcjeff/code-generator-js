@@ -1,9 +1,9 @@
 <template>
-  <config-component
+  <ConfigComponent
     title="Ignite Loggers Options"
     :configsFromFile="loggers"
     @add-config="addConfig"
-  ></config-component>
+  ></ConfigComponent>
 </template>
 
 <script>

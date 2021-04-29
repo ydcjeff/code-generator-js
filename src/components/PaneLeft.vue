@@ -3,7 +3,7 @@
     <button
       v-for="tab in tabs"
       :key="tab"
-      class="tab"
+      class="left-pane-tab"
       :class="{ active: currentTab === tab }"
       @click="currentTab = tab"
     >
@@ -11,9 +11,9 @@
     </button>
   </div>
   <div class="left-pane-contexts">
-    <keep-alive>
+    <KeepAlive>
       <component :is="currentTabComponent"></component>
-    </keep-alive>
+    </KeepAlive>
   </div>
 </template>
 
@@ -49,22 +49,28 @@ export default {
   padding: 2px 0;
   border-bottom: 1px solid var(--c-white-dark);
 }
-.tab {
+.left-pane-tabs,
+.left-pane-contexts {
+  padding-left: 1.5rem;
+}
+.left-pane-tab {
+  cursor: pointer;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size);
   text-align: center;
   border-radius: 4px;
   padding: 0.4rem 0.8rem;
   margin: 2px;
+  transition: background-color 0.1s ease-in;
 }
-.tab:hover {
-  background-color: var(--c-white-dark);
-}
-.tab:focus {
-  outline: none;
-}
+.left-pane-tab:hover,
 .active {
-  background-color: var(--c-white-light);
+  background-color: var(--c-brand-red);
+  color: var(--c-white-light);
+  transition: background-color 0.25s ease-in-out;
 }
 .left-pane-contexts {
+  height: 100vh;
   overflow: auto;
 }
 </style>

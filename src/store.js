@@ -9,7 +9,7 @@ import utilsCode from './templates/utils.py?raw'
 
 export const store = reactive({
   config: {},
-  generatedCode: Object.fromEntries(getTemplateFileNames().map((v) => [v, ''])),
+  generatedCode: Object.fromEntries(getTemplateFileNames().map((v) => [v, '']))
 })
 
 export function saveConfig(key, value) {
@@ -27,18 +27,26 @@ export function getTemplateFileNames() {
     'models.py',
     'trainers.py',
     'utils.py',
-    'requirements.txt',
+    'requirements.txt'
   ]
 }
 
 export function generateCode(currentTab) {
   const fileNames = getTemplateFileNames()
-  const generateFnArray = [generateReadmeCode, generateConfigCode, generateDatasetsCode, generateMainCode, generateModelsCode, generateTrainersCode, generateUtilsCode, generateRequirementsCode]
+  const generateFnArray = [
+    generateReadmeCode,
+    generateConfigCode,
+    generateDatasetsCode,
+    generateMainCode,
+    generateModelsCode,
+    generateTrainersCode,
+    generateUtilsCode,
+    generateRequirementsCode
+  ]
 
   const index = fileNames.findIndex((value) => value === currentTab)
   return generateFnArray[index]().trim()
 }
-
 
 function generateConfigCode() {
   return JSON.stringify(store.config, null, 2)
@@ -49,11 +57,25 @@ function generateDatasetsCode() {
 }
 
 function generateMainCode() {
-  return mainCode
+  return mainCode.split('#%%').join()
 }
 
 function generateModelsCode() {
-  return modelsCode
+  const visionModel = store.config['vision']
+  const textModel = store.config['text']
+  const audioModel = store.config['audio']
+
+  if (visionModel) {
+    const subDomain = Object.keys(visionModel)
+    if (!subDomain.includes('classification')) {
+      modelsCode.replace(
+        'models.__dict__',
+        `models.${subDomain.toString()}.__dict__}`
+      )
+    }
+  }
+  store.generatedCode['models.py'] = modelsCode
+  return store.generatedCode['models.py']
 }
 
 function generateReadmeCode() {

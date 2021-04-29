@@ -1,10 +1,10 @@
 <template>
   <h1>Training Options</h1>
-  <config-component
+  <ConfigComponent
     title="Distributed Training Options"
     :configsFromFile="tranining"
     @add-config="saveConfig"
-  ></config-component>
+  ></ConfigComponent>
 </template>
 
 <script>

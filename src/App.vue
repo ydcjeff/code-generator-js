@@ -1,14 +1,14 @@
 <template>
-  <nav-bar />
-  <split-pane>
+  <NavBar />
+  <SplitPane>
     <template #left>
-      <pane-left />
+      <PaneLeft />
     </template>
     <template #right>
-      <pane-right />
+      <PaneRight />
     </template>
-  </split-pane>
-  <footer class="px-6 py-12 text-center text-sm border-t">
+  </SplitPane>
+  <footer class="footer-and-badge">
     BSD-3-Clause License | Copyright &copy; 2021-present PyTorch-Ignite Team &
     Code-Generator Contributors
   </footer>
@@ -31,12 +31,23 @@ export default {
 </script>
 
 <style>
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  border-width: 0;
+}
+::selection {
+  color: var(--c-white-light);
+  background: var(--c-brand-red);
+}
 :root {
   --c-white: #fff;
   --c-white-light: #f6f6f6;
-  --c-white-dark: rgba(200, 200, 200, 0.8);
+  --c-white-dark: #e4e4e7;
   --c-brand-red: #ee4c2c;
   --c-brand-yellow: #eaa700;
+  --c-text: #475569;
   --font-size: 1rem;
   --font-family-base: Avenir, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans',
@@ -47,22 +58,30 @@ export default {
   --code-text-light: #476582;
   --code-inline-bg-color: rgba(27, 31, 35, 0.05);
 }
-
-html,
 body {
   font-family: var(--font-family-base);
   font-size: var(--font-size);
   line-height: 1.5;
+  margin: 0;
   height: 100%;
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-
+@media (prefers-reduced-motion) {
+  :focus {
+    border-radius: 3px;
+    transition: outline-offset 0.25s ease;
+    outline-offset: 5px;
+    outline: 2px solid var(--c-brand-yellow);
+  }
+}
 /* overriding prismjs defaults */
 pre,
 code {
   font-family: var(--code-font-family) !important;
   font-size: var(--code-font-size) !important;
 }
-
 /* for three backticks code block */
 code {
   margin: 0;
@@ -70,5 +89,12 @@ code {
   padding: 0.25rem 0.5rem;
   color: var(--code-text-light);
   background-color: var(--code-inline-bg-color);
+}
+.footer-and-badge {
+  border-top: 1px solid var(--c-white-dark);
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  padding: 3rem 1.5rem;
 }
 </style>

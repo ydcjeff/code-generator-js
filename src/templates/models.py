@@ -8,4 +8,4 @@ def get_model(name: str) -> nn.Module:
     else:
         raise RuntimeError(f"Unknown model name {name}")
 
-    return fn(num_classes=10)
+    return fn()
