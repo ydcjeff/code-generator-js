@@ -7,7 +7,6 @@
     "serve": "vite preview",
     "fmt": "prettier --write ."
   },
-  "dependencies": {},
   "devDependencies": {
     "jszip": "^3.6.0",
     "file-saver": "^2.0.5",
