@@ -57,6 +57,7 @@ export default {
 .right-pane-tab {
   cursor: pointer;
   font-family: var(--font-family-base);
+  font-size: var(--font-size);
   text-align: center;
   border-radius: 4px;
   padding: 0.4rem 0.8rem;
