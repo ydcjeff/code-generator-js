@@ -3,7 +3,7 @@
     <h1>
       <a href="/">
         <img
-          src="/favicon.svg"
+          src="../assets/ignite_logomark.svg"
           alt="PyTorch-Ignite logo"
           width="50"
           height="50"
