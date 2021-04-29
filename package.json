@@ -7,13 +7,12 @@
     "serve": "vite preview",
     "fmt": "prettier --write ."
   },
-  "dependencies": {
-    "file-saver": "^2.0.5",
-    "jszip": "^3.6.0",
-    "prismjs": "^1.23.0",
-    "vue": "^3.0.11"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "jszip": "^3.6.0",
+    "file-saver": "^2.0.5",
+    "prismjs": "^1.23.0",
+    "vue": "^3.0.11",
     "@types/file-saver": "^2.0.2",
     "@types/prismjs": "^1.16.5",
     "@vitejs/plugin-vue": "^1.2.2",
