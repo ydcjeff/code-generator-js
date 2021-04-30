@@ -1,13 +1,9 @@
-"""
-`trainer` and `evaluator` like trainer and evaluator
-"""
 from typing import Any, Tuple
 
 import torch
 from ignite.engine import Engine
 from torch.cuda.amp import autocast
 from torch.optim.optimizer import Optimizer
-
 
 # Edit below functions the way how the model will be training
 
@@ -143,16 +139,12 @@ def create_trainers(config, model, optimizer, loss_fn, device) -> Tuple[Engine, 
             model=model,
             loss_fn=loss_fn,
             optimizer=optimizer,
-            device=device
+            device=device,
         )
     )
     evaluator = Engine(
         lambda e, b: evaluate_function(
-            config=config,
-            engine=e,
-            batch=b,
-            model=model,
-            device=device
+            config=config, engine=e, batch=b, model=model, device=device
         )
     )
     return trainer, evaluator

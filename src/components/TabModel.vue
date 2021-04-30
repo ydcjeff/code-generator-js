@@ -1,7 +1,8 @@
 <template>
   <div class="tab-model">
+    <h1>Model Selection</h1>
     <div class="domain">
-      <label for="domain-select">Domain:</label>
+      <h2><label for="domain-select">Domain:</label></h2>
       <select
         name="domain"
         id="domain-select"
@@ -19,7 +20,9 @@
       </select>
     </div>
     <div class="subdomain" v-if="selectedDomain">
-      <label for="subdomain-select">{{ selectedDomain }} Sub Domains:</label>
+      <h3>
+        <label for="subdomain-select">{{ selectedDomain }} Sub Domains:</label>
+      </h3>
       <select
         name="subdomain"
         id="subdomain-select"
@@ -37,14 +40,16 @@
       </select>
     </div>
     <div class="model" v-if="selectedSubDomain">
-      <label for="model-select"
-        >{{ selectedSubDomain }} Available Models:</label
-      >
+      <h4>
+        <label for="model-select"
+          >{{ selectedSubDomain }} Available Models:</label
+        >
+      </h4>
       <select
         name="model"
         id="model-select"
         v-model="selectedModel"
-        @change="saveConfig"
+        @change="saveModel"
       >
         <option disabled value="">--- Please select a model ---</option>
         <option
@@ -58,6 +63,9 @@
         </option>
       </select>
     </div>
+      <a class="learn-more" :href="urls[selectedDomain]" v-show="selectedDomain"
+        >Learn more about available {{ selectedDomain }} models.</a
+      >
   </div>
 </template>
 
@@ -65,37 +73,48 @@
 import vision from '../metadata/models/vision.json'
 import text from '../metadata/models/text.json'
 import { saveConfig } from '../store'
+import { computed, ref } from 'vue'
 
 export default {
-  data() {
-    return {
-      urls: {
-        Vision: 'https://pytorch.org/vision/stable/models.html',
-        Text: '',
-        Audio: ''
-      },
-      domainsObj: { Vision: vision, Text: text, Audio: {} },
-      selectedDomain: '',
-      selectedSubDomain: '',
-      selectedModel: ''
+  setup() {
+    const selectedDomain = ref('')
+    const selectedSubDomain = ref('')
+    const selectedModel = ref('')
+    const domainsObj = { Vision: vision, Text: text, Audio: {} }
+    const urls = {
+      Vision: 'https://pytorch.org/vision/stable/models.html',
+      Text: '',
+      Audio: ''
     }
-  },
-  computed: {
-    domainChange() {
-      if (this.selectedSubDomain) {
-        this.selectedSubDomain = ''
-        this.selectedModel = ''
+
+    // computed properties
+    const domainChange = computed(() => {
+      if (selectedSubDomain.value) {
+        selectedSubDomain.value = ''
+        selectedModel.value = ''
       }
-    },
-    subDomainChange() {
-      if (this.selectedModel) {
-        this.selectedModel = ''
+    })
+    const subDomainChange = computed(() => {
+      if (selectedModel.value) {
+        selectedModel.value = ''
       }
-    },
-    saveConfig() {
+    })
+    const saveModel = computed(() => {
       const subDomainModel = {}
-      subDomainModel[this.selectedSubDomain.toLowerCase()] = this.selectedModel
-      saveConfig(this.selectedDomain.toLowerCase(), subDomainModel)
+      subDomainModel[selectedSubDomain.value.toLowerCase()] =
+        selectedModel.value
+      saveConfig(selectedDomain.value.toLowerCase(), subDomainModel)
+    })
+
+    return {
+      selectedDomain,
+      selectedSubDomain,
+      selectedModel,
+      domainsObj,
+      urls,
+      domainChange,
+      subDomainChange,
+      saveModel
     }
   }
 }
@@ -103,15 +122,60 @@ export default {
 
 <style scoped>
 .tab-model {
-  margin: 1.5rem 2.5rem;
+  margin: 0 1.5rem;
 }
-.domain {
-  padding: 1rem;
-}
-.subdomain {
-  padding: 1rem;
-}
+.domain,
+.subdomain,
 .model {
-  padding: 1rem;
+  position: relative;
+}
+.domain h2 {
+  margin-bottom: 0;
+}
+.subdomain h3 {
+  margin-bottom: 0.25rem;
+}
+.model h4 {
+  margin-bottom: 0.5rem;
+}
+.domain select,
+.subdomain select,
+.model select {
+  appearance: none;
+  background: var(--c-white-light);
+  border-radius: 3px;
+  color: var(--c-text);
+  cursor: pointer;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size);
+  padding: 0.5rem 1rem;
+  text-align: center;
+  width: 100%;
+}
+.domain::after,
+.subdomain::after,
+.model::after {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  bottom: 16px;
+  border-top: 6px solid var(--c-brand-red);
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 0;
+  vertical-align: middle;
+}
+.learn-more {
+  display: block;
+  margin-top: 1rem;
+  max-width: max-content;
+  font-weight: bold;
+  text-transform: capitalize;
+  text-decoration: none;
+  border-bottom: 2px solid var(--c-brand-red);
+  color: var(--c-text);
+}
+.learn-more:hover {
+  border-bottom-color: transparent;
 }
 </style>

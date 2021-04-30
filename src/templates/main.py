@@ -1,16 +1,14 @@
-"""main entrypoint training."""
-#%% imports
+### imports
 from argparse import ArgumentParser
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import ignite.distributed as idist
+from datasets import get_datasets
 from ignite.engine.events import Events
 from ignite.metrics import Accuracy, Loss
 from ignite.utils import manual_seed
-
-from datasets import get_datasets
 from trainers import create_trainers
 from utils import (
     get_handlers,
@@ -22,7 +20,8 @@ from utils import (
     setup_logging,
 )
 
-#%% run
+
+### run
 def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
     """function to be run by idist.Parallel context manager."""
 
@@ -113,7 +112,12 @@ def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
     # ignite handlers and ignite loggers
     # -------------------------------------
 
-    to_save = {"model": model, "optimizer": optimizer, "trainer": trainer, "lr_scheduler": lr_scheduler}
+    to_save = {
+        "model": model,
+        "optimizer": optimizer,
+        "trainer": trainer,
+        "lr_scheduler": lr_scheduler,
+    }
     best_model_handler, es_handler, timer_handler = get_handlers(
         config=config,
         model=model,
@@ -145,7 +149,11 @@ def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
     # for training stats
     # --------------------------------
 
-    trainer.add_event_handler(Events.ITERATION_COMPLETED(every=config.log_every_iters), log_metrics, tag="train")
+    trainer.add_event_handler(
+        Events.ITERATION_COMPLETED(every=config.log_every_iters),
+        log_metrics,
+        tag="train",
+    )
 
     # ---------------------------------------------
     # run evaluation at every training epoch end
@@ -172,7 +180,11 @@ def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
     # setup if done. let's run the training
     # ------------------------------------------
 
-    trainer.run(train_dataloader, max_epochs=config.max_epochs, epoch_length=config.train_epoch_length)
+    trainer.run(
+        train_dataloader,
+        max_epochs=config.max_epochs,
+        epoch_length=config.train_epoch_length,
+    )
 
     # ------------------------------------------------------------
     # close the logger after the training completed / terminated
@@ -195,7 +207,8 @@ def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
     if best_model_handler is not None:
         logger.info("Last and best checkpoint: %s", best_model_handler.last_checkpoint)
 
-#%% main
+
+### main
 def main():
     parser = ArgumentParser(parents=[get_default_parser()])
     config = parser.parse_args()
