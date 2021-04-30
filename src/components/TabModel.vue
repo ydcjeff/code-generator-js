@@ -63,9 +63,14 @@
         </option>
       </select>
     </div>
-      <a class="learn-more" :href="urls[selectedDomain]" v-show="selectedDomain"
-        >Learn more about available {{ selectedDomain }} models.</a
-      >
+    <a
+      class="learn-more"
+      target="_blank"
+      rel="noopener noreferrer"
+      :href="urls[selectedDomain]"
+      v-show="selectedDomain"
+      >Learn more about available {{ selectedDomain }} models.</a
+    >
   </div>
 </template>
 
