@@ -9,12 +9,13 @@ import utils from './templates/utils.py?raw'
 
 export const store = reactive({
   config: {},
-  generatedCode: Object.fromEntries(getTemplateFileNames().map((v) => [v, '']))
+  _config: {},
+  code: Object.fromEntries(getTemplateFileNames().map((v) => [v, '']))
 })
 
 export function saveConfig(key, value) {
-  if (store.config[key] === undefined || store.config[key] !== value) {
-    store.config[key] = value
+  if (store._config[key] === undefined || store._config[key] !== value) {
+    store._config[key] = value
   }
 }
 
@@ -49,6 +50,18 @@ export function generateCode(currentTab) {
 }
 
 function generateConfig() {
+  // model tab
+  const subDomains = ['vision', 'text', 'audio']
+  let validSubDomain
+  const found = subDomains.some((value) => {
+    validSubDomain = value
+    return Object.keys(store._config).includes(value)
+  })
+  if (found) {
+    const modelObj = store._config[validSubDomain]
+    const key = Object.keys(modelObj)
+    store.config['model'] = modelObj[key[0]]
+  }
   return JSON.stringify(store.config, null, 2)
 }
 
@@ -61,7 +74,7 @@ function generateMain() {
 }
 
 function generateModels() {
-  const visionModel = store.config['vision']
+  const visionModel = store._config['vision']
   let modelsCode = ''
 
   if (visionModel) {
@@ -79,7 +92,37 @@ function generateModels() {
 }
 
 function generateReadme() {
-  return readme
+  const launch = 'python -m torch.distributed.launch'
+  const nproc_per_node = store._config.nproc_per_node
+  const nnodes = store._config.nnodes
+  const master_addr = store._config.master_addr
+  const master_port = store._config.master_port
+  let tempReadme = readme
+  const cmdRegex = /python.*main.py/gi
+
+  // multi processes
+  if (nproc_per_node && nproc_per_node > 1) {
+    // single node
+    if (nnodes === 1 || !nnodes) {
+      tempReadme = readme.replaceAll(
+        cmdRegex,
+        launch + ` --nproc_per_node ${nproc_per_node} main.py`
+      )
+    }
+    // multi node
+    if (nnodes && nnodes > 1) {
+      const multinode =
+        ` --nproc_per_node ${nproc_per_node}` +
+        ` --nnodes ${nnodes}` +
+        ` --master_addr ${master_addr}` +
+        ` --master_port ${master_port}` +
+        ' main.py'
+
+      tempReadme = readme.replaceAll(cmdRegex, launch + multinode)
+    }
+  }
+  store.code['README.md'] = tempReadme
+  return store.code['README.md']
 }
 
 function generateRequirements() {
@@ -87,7 +130,7 @@ function generateRequirements() {
 }
 
 function generateTrainers() {
-  if (store.config['deterministic']) {
+  if (store._config['deterministic']) {
     return trainers.replaceAll('Engine', 'DeterministicEngine')
   }
   return trainers

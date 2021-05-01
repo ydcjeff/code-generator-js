@@ -10,7 +10,8 @@
         v-model="isDeterministic"
         @change="saveDeterministic"
       />
-      {{ deterministic.description }}</label
+      {{ deterministic.description }}
+      <code>{{ deterministic.name }}</code></label
     >
     <h2 class="training">Distributed Training</h2>
     <div
@@ -18,11 +19,14 @@
       :key="index"
       class="inputs-wrapper distributed"
     >
-      <label :for="d.name">{{ d.description }}</label>
+      <label :for="d.name"
+        >{{ d.description }} <code>{{ d.name }}</code></label
+      >
       <input
         :name="d.name"
         :type="d.type"
         :id="d.name"
+        :min="d.min"
         v-if="d.type === 'number'"
         v-model.number="distributedValue[d.name]"
         @change="saveDistributed(d.name, distributedValue[d.name])"

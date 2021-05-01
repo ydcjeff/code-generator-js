@@ -1,5 +1,5 @@
 <template>
-  <div class="tab model">
+  <div class="tab models">
     <h1>Model Selection</h1>
     <div class="domain">
       <h2><label for="domain-select">Domain</label></h2>
