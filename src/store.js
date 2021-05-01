@@ -6,6 +6,7 @@ import readme from './templates/README.md?raw'
 import requirements from './templates/requirements.txt?raw'
 import trainers from './templates/trainers.py?raw'
 import utils from './templates/utils.py?raw'
+import patch from './templates/_patch.py?raw'
 
 export const store = reactive({
   config: {},
@@ -62,6 +63,9 @@ function generateConfig() {
     const key = Object.keys(modelObj)
     store.config['model'] = modelObj[key[0]]
   }
+  for (const key of ['filename_prefix', 'dirname', 'n_saved']) [
+    store.config[key] = store._config[key]
+  ]
   return JSON.stringify(store.config, null, 2)
 }
 
@@ -70,7 +74,20 @@ function generateDatasets() {
 }
 
 function generateMain() {
-  return main.replaceAll(/###\s\w+\n/gi, '')
+  const hasToSave = store._config.to_save
+  store.code['main.py'] = main
+  let toSaveCode = 'to_save = { '
+  if (hasToSave) {
+    for (const key in hasToSave) {
+      if (hasToSave[key]) {
+        toSaveCode += `'${key}': ${key}, `
+      }
+    }
+    toSaveCode += '}'
+    toSaveCode += '\n    handler = checkpoint_training(to_save, config)'
+    store.code['main.py'] = main.replaceAll('# checkpoint_training', toSaveCode)
+  }
+  return store.code['main.py'] 
 }
 
 function generateModels() {
@@ -137,5 +154,18 @@ function generateTrainers() {
 }
 
 function generateUtils() {
-  return utils.replaceAll(/###\s\w+\n/gi, '')
+  const hasToSave = store._config.to_save
+  let tempCode = utils
+  let patchCode
+  if (hasToSave) {
+    if (Object.values(hasToSave).some((value) => value === true)) {
+      tempCode = utils.split('###')
+      patchCode = patch.split('###\n')
+      tempCode[1] += patchCode[1]
+      tempCode.push(patchCode[2])
+      tempCode = tempCode.join('\n')
+    }
+  }
+  store.code['utils.py'] = tempCode
+  return store.code['utils.py']
 }

@@ -2,6 +2,7 @@
 from argparse import ArgumentParser
 from datetime import datetime
 from pathlib import Path
+from pprint import pformat
 from typing import Any
 
 import ignite.distributed as idist
@@ -14,7 +15,6 @@ from utils import (
     get_handlers,
     get_logger,
     initialize,
-    log_basic_info,
     log_metrics,
     resume_from,
     setup_logging,
@@ -23,7 +23,6 @@ from utils import (
 
 ### run
 def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
-    """function to be run by idist.Parallel context manager."""
 
     # ----------------------
     # make a certain seed
@@ -104,7 +103,7 @@ def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
     # -------------------------------------------
 
     logger = setup_logging(config)
-    log_basic_info(logger, config)
+    logger.info("Configuration: %s", pformat(vars(config)))
     trainer.logger = logger
     evaluator.logger = logger
 
@@ -112,6 +111,7 @@ def run(local_rank: int, config: Any, *args: Any, **kwargs: Any):
     # ignite handlers and ignite loggers
     # -------------------------------------
 
+    # checkpoint_training
     to_save = {
         "model": model,
         "optimizer": optimizer,

@@ -1,7 +1,6 @@
-import logging
+###
 from logging import Logger
 from pathlib import Path
-from pprint import pformat
 from typing import Any, Mapping, Optional, Tuple, Union
 
 import ignite.distributed as idist
@@ -59,48 +58,6 @@ def initialize(
     loss_fn = loss_fn.to(idist.device())
 
     return model, optimizer, loss_fn, lr_scheduler
-
-
-### log_basic_info
-def log_basic_info(logger: Logger, config: Any) -> None:
-    """Logging about pytorch, ignite, configurations, gpu system
-    distributed settings.
-
-    Parameters
-    ----------
-    logger
-        Logger instance for logging
-    config
-        config object to log
-    """
-    import ignite
-
-    logger.info("PyTorch version: %s", torch.__version__)
-    logger.info("Ignite version: %s", ignite.__version__)
-    if torch.cuda.is_available():
-        # explicitly import cudnn as
-        # torch.backends.cudnn can not be pickled with hvd spawning procs
-        from torch.backends import cudnn
-
-        logger.info(
-            "GPU device: %s", torch.cuda.get_device_name(idist.get_local_rank())
-        )
-        logger.info("CUDA version: %s", torch.version.cuda)
-        logger.info("CUDNN version: %s", cudnn.version())
-
-    logger.info("Configuration: %s", pformat(vars(config)))
-
-    if idist.get_world_size() > 1:
-        logger.info("distributed configuration: %s", idist.model_name())
-        logger.info("backend: %s", idist.backend())
-        logger.info("device: %s", idist.device().type)
-        logger.info("hostname: %s", idist.hostname())
-        logger.info("world size: %s", idist.get_world_size())
-        logger.info("rank: %s", idist.get_rank())
-        logger.info("local rank: %s", idist.get_local_rank())
-        logger.info("num processes per node: %s", idist.get_nproc_per_node())
-        logger.info("num nodes: %s", idist.get_nnodes())
-        logger.info("node rank: %s", idist.get_node_rank())
 
 
 ### log_metrics
@@ -167,8 +124,7 @@ def setup_logging(config: Any) -> Logger:
     Parameters
     ----------
     config
-        config object. config has to contain
-        `verbose` and `output_dir` attributes.
+        config object. config has to contain `output_dir` attribute.
 
     Returns
     -------
@@ -179,7 +135,6 @@ def setup_logging(config: Any) -> Logger:
     reset = "\033[0m"
     logger = setup_logger(
         name=f"{green}[ignite]{reset}",
-        level=logging.INFO if config.verbose else logging.WARNING,
         format="%(name)s: %(message)s",
         filepath=config.output_dir / "training-info.log",
     )
