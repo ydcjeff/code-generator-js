@@ -1,0 +1,40 @@
+/* margin for left pane tabs */
+.tab {
+  --left-pane-margin-x: 1.5rem;
+  margin: 0 var(--left-pane-margin-x);
+}
+/* input style for text and number */
+input {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size);
+}
+input[type='text'],
+input[type='number'] {
+  border-radius: 3px 3px 0 0;
+  border: 1px solid var(--c-white-light);
+  background: var(--c-white-light);
+  padding: 0.5rem 1rem;
+  width: 100%;
+}
+.inputs-wrapper {
+  position: relative;
+}
+input[type='text'] ~ .expand,
+input[type='number'] ~ .expand {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-bottom: 2px solid var(--c-brand-red);
+  transform: scaleX(0);
+  transition: transform 0.25s ease-in-out;
+}
+input[type='text']:focus,
+input[type='number']:focus {
+  outline: none;
+  background: var(--c-white);
+}
+input[type='text']:focus ~ .expand,
+input[type='number']:focus ~ .expand {
+  transform: scaleX(1);
+}

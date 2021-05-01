@@ -1,8 +1,8 @@
 <template>
-  <div class="tab-model">
+  <div class="tab model">
     <h1>Model Selection</h1>
     <div class="domain">
-      <h2><label for="domain-select">Domain:</label></h2>
+      <h2><label for="domain-select">Domain</label></h2>
       <select
         name="domain"
         id="domain-select"
@@ -21,7 +21,7 @@
     </div>
     <div class="subdomain" v-if="selectedDomain">
       <h3>
-        <label for="subdomain-select">{{ selectedDomain }} Sub Domains:</label>
+        <label for="subdomain-select">{{ selectedDomain }} Sub Domains</label>
       </h3>
       <select
         name="subdomain"
@@ -42,7 +42,7 @@
     <div class="model" v-if="selectedSubDomain">
       <h4>
         <label for="model-select"
-          >{{ selectedSubDomain }} Available Models:</label
+          >{{ selectedSubDomain }} Available Models</label
         >
       </h4>
       <select
@@ -126,9 +126,8 @@ export default {
 </script>
 
 <style scoped>
-.tab-model {
-  margin: 0 1.5rem;
-}
+@import url('../assets/main.css');
+
 .domain,
 .subdomain,
 .model {

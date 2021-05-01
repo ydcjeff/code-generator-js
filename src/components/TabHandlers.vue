@@ -1,29 +1,35 @@
 <template>
-  <div class="handlers">
-    <p>{{ _to_save.description }}</p>
+  <div class="tab handlers">
+    <h1>Ignite Handlers Options</h1>
+    <h2>Checkpointing</h2>
+    <p>{{ to_save.description }}</p>
     <div
-      v-for="(value, key, index) in _to_save.options"
+      v-for="(value, key, index) in to_save.options"
       :key="index"
       class="saving"
     >
-      <input
-        :id="key"
-        :type="value.type"
-        :value="key"
-        v-model="to_save[key]"
-        @change="saveConfig('to_save', to_save)"
-      />
-      <label :for="key">{{ titleCase(key) }} ({{ value.description }})</label>
+      <label :for="key">
+        <input
+          :id="key"
+          :type="value.type"
+          :value="key"
+          v-model="toSave[key]"
+          @change="saveConfig('to_save', toSave)"
+        />
+        {{ titleCase(key) }} ({{ value.description }})</label
+      >
     </div>
     <div v-for="(h, index) in restHandlers" :key="index" class="inputs-wrapper">
       <template v-if="h.type === 'checkbox'">
-        <input
-          :id="h.name"
-          :type="h.type"
-          v-model="restHandlersValue[h.name]"
-          @change="saveConfig(h.name, restHandlersValue[h.name])"
-        />
-        <label :for="h.name">{{ h.description }}</label>
+        <label :for="h.name">
+          <input
+            :id="h.name"
+            :type="h.type"
+            v-model="restHandlersValue[h.name]"
+            @change="saveConfig(h.name, restHandlersValue[h.name])"
+          />
+          {{ h.description }}</label
+        >
       </template>
       <template v-else-if="h.type === 'number'">
         <label :for="h.name">{{ h.description }}</label>
@@ -63,61 +69,34 @@ export default {
       restHandlersObj[k] = ''
     }
     const restHandlersValue = ref(restHandlersObj)
-    const to_save = ref({})
-    return { to_save, restHandlers, restHandlersValue, saveConfig }
-  },
-  data() {
+    const toSave = ref({})
+
     return {
-      _to_save: to_save
-    }
-  },
-  methods: {
-    titleCase(value) {
-      return value[0].toUpperCase() + value.slice(1)
+      to_save,
+      toSave,
+      restHandlers,
+      restHandlersValue,
+      saveConfig,
+      titleCase
     }
   }
+}
+
+function titleCase(value) {
+  return value[0].toUpperCase() + value.slice(1)
 }
 </script>
 
 <style scoped>
-.handlers {
-  padding: 0 1rem;
+@import url('../assets/main.css');
+
+.tab label {
+  display: block;
+  width: max-content;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 .saving {
   margin: 0.75rem;
-}
-input {
-  font-family: var(--font-family-base);
-  font-size: var(--font-size);
-}
-input[type='text'],
-input[type='number'] {
-  border-radius: 3px 3px 0 0;
-  border: 1px solid var(--c-white-light);
-  background: var(--c-white-light);
-  padding: 0.5rem 1rem;
-  width: 100%;
-}
-.inputs-wrapper {
-  position: relative;
-}
-input[type='text'] ~ .expand,
-input[type='number'] ~ .expand {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  border-bottom: 2px solid var(--c-brand-red);
-  transform: scaleX(0);
-  transition: transform 0.25s ease-in-out;
-}
-input[type='text']:focus,
-input[type='number']:focus {
-  outline: none;
-  background: var(--c-white);
-}
-input[type='text']:focus ~ .expand,
-input[type='number']:focus ~ .expand {
-  transform: scaleX(1);
 }
 </style>

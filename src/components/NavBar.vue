@@ -112,6 +112,40 @@
           </g>
         </svg>
       </a>
+      <a
+        class="external-links"
+        href="https://discord.gg/djZtm3EmKj"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Discord
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          aria-hidden="true"
+          role="img"
+          class="iconify iconify--system-uicons"
+          width="15"
+          height="15"
+          preserveAspectRatio="xMidYMid meet"
+          viewBox="0 0 21 21"
+        >
+          <g
+            fill="none"
+            fill-rule="evenodd"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18.5 8.5v-5h-5"></path>
+            <path d="M18.5 3.5l-7 7"></path>
+            <path
+              d="M10.5 3.5h-5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-4"
+            ></path>
+          </g>
+        </svg>
+      </a>
     </div>
   </nav>
 </template>
