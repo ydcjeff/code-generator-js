@@ -18,29 +18,38 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 export default {
-  data() {
-    return {
-      width: 40,
-      isDragging: false
+  setup() {
+    let width = ref(40)
+    let isDragging = ref(false)
+    const container = ref()
+
+    // functions
+    const getWidth = () => {
+      return width.value < 20 ? 20 : width.value > 80 ? 80 : width.value
     }
-  },
-  methods: {
-    getWidth() {
-      return this.width < 20 ? 20 : this.width > 80 ? 80 : this.width
-    },
-    onDragging(e) {
-      if (this.isDragging) {
+    const onDragging = (e) => {
+      if (isDragging.value) {
         const draggingPosition = e.pageX
-        const totalSize = this.$refs.container.offsetWidth
-        this.width = (draggingPosition / totalSize) * 100
+        const totalSize = container.value.offsetWidth
+        width.value = (draggingPosition / totalSize) * 100
       }
-    },
-    startDragging() {
-      this.isDragging = true
-    },
-    stopDragging() {
-      this.isDragging = false
+    }
+    const startDragging = () => {
+      isDragging.value = true
+    }
+    const stopDragging = () => {
+      isDragging.value = false
+    }
+    return {
+      width,
+      isDragging,
+      container,
+      getWidth,
+      onDragging,
+      startDragging,
+      stopDragging
     }
   }
 }

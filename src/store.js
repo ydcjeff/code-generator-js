@@ -10,7 +10,7 @@ import utils from './templates/utils.py?raw'
 export const store = reactive({
   config: {},
   _config: {},
-  code: Object.fromEntries(getTemplateFileNames().map((v) => [v, '']))
+  code: {}
 })
 
 export function saveConfig(key, value) {

@@ -22,24 +22,20 @@ import TabModel from './TabModel.vue'
 import TabTraining from './TabTraining.vue'
 import TabHandlers from './TabHandlers.vue'
 import TabLoggers from './TabLoggers.vue'
+import { computed, ref } from 'vue'
 
 export default {
-  components: {
-    TabModel,
-    TabTraining,
-    TabLoggers,
-    TabHandlers
-  },
-  computed: {
-    currentTabComponent() {
-      return 'tab-' + this.currentTab.toLowerCase()
-    }
-  },
-  data() {
-    return {
-      currentTab: 'Model',
-      tabs: ['Model', 'Training', 'Handlers', 'Loggers']
-    }
+  components: { TabModel, TabTraining, TabLoggers, TabHandlers },
+  setup() {
+    const currentTab = ref('Model')
+    const tabs = ref(['Model', 'Training', 'Handlers', 'Loggers'])
+
+    // computed properties
+    const currentTabComponent = computed(() => {
+      return 'tab-' + currentTab.value.toLowerCase()
+    })
+
+    return { currentTab, tabs, currentTabComponent }
   }
 }
 </script>

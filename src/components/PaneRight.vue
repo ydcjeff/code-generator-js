@@ -19,28 +19,22 @@
 
 <script>
 import CodeBlock from './CodeBlock.vue'
-import { store, getTemplateFileNames, generateCode } from '../store'
+import { getTemplateFileNames, generateCode } from '../store'
+import { computed, ref } from 'vue'
 
 export default {
-  components: {
-    CodeBlock
-  },
-  data() {
-    return {
-      code: store.config,
-      currentTab: 'README.md',
-      tabs: getTemplateFileNames()
+  components: { CodeBlock },
+  setup() {
+    const currentTab = ref('README.md')
+    const tabs = ref(getTemplateFileNames())
+
+    const getLang = computed(() => {
+      return currentTab.value.split('.')[1]
+    })
+    const formattedCode = () => {
+      return generateCode(currentTab.value)
     }
-  },
-  methods: {
-    formattedCode() {
-      return generateCode(this.currentTab)
-    }
-  },
-  computed: {
-    getLang() {
-      return this.currentTab.split('.')[1]
-    }
+    return { currentTab, tabs, getLang, formattedCode }
   }
 }
 </script>

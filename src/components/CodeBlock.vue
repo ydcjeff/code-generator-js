@@ -5,7 +5,7 @@
         :class="className"
       ><code :class="className" v-html="highlightCode"></code></pre>
       <div class="line-numbers-wrapper">
-        <template v-for="i in getlineNumbers" :key="i">
+        <template v-for="i in getLineNumbers" :key="i">
           <span class="line-numbers">{{ i }}</span>
           <br />
         </template>
@@ -15,36 +15,45 @@
 </template>
 
 <script>
-import prism from 'prismjs'
+import { highlight, languages } from 'prismjs'
 import 'prismjs/components/prism-json'
 import 'prismjs/components/prism-python'
 import 'prismjs/components/prism-markdown'
 import 'prismjs/themes/prism-tomorrow.css'
+import { computed, toRefs } from 'vue'
 
 export default {
-  computed: {
-    className() {
-      if (this.lang === 'txt') {
-        return `language-markup`
-      }
-      return `language-${this.lang}`
-    },
-    highlightCode() {
-      if (this.lang === 'txt') {
-        return prism.highlight(this.code, prism.languages['markup'], 'marktup')
-      }
-      return prism.highlight(this.code, prism.languages[this.lang], this.lang)
-    },
-    getlineNumbers() {
-      return this.code.split('\n').length
-    }
-  },
   props: {
     lang: {
       type: String,
       default: 'py'
     },
-    code: String
+    code: {
+      type: String,
+      required: true
+    }
+  },
+  setup(props) {
+    const { lang, code } = toRefs(props)
+
+    // computed properties
+    const className = computed(() => {
+      if (props.lang === 'txt') {
+        return 'language-markup'
+      }
+      return `language-${lang.value}`
+    })
+    const highlightCode = computed(() => {
+      if (lang.value === 'txt') {
+        return highlight(code.value, languages['markup'], 'markup')
+      }
+      return highlight(code.value, languages[lang.value], lang.value)
+    })
+    const getLineNumbers = computed(() => {
+      return code.value.split('\n').length
+    })
+
+    return { className, highlightCode, getLineNumbers }
   }
 }
 </script>
