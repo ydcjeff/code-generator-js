@@ -1,3 +1,4 @@
+### imports ###
 from typing import Any, Tuple
 
 import torch
@@ -60,7 +61,10 @@ def train_function(
     optimizer.zero_grad()
 
     loss_value = loss.item()
-    engine.state.metrics = {"epoch": engine.state.epoch, "train_loss": loss_value}
+    engine.state.metrics = {
+        "epoch": engine.state.epoch,
+        "train_loss": loss_value,
+    }
     return {"train_loss": loss_value}
 
 
@@ -111,7 +115,9 @@ def evaluate_function(
 
 # function for creating engines which will be used in main.py
 # any necessary arguments can be provided.
-def create_trainers(config, model, optimizer, loss_fn, device) -> Tuple[Engine, Engine]:
+def create_trainers(
+    config, model, optimizer, loss_fn, device
+) -> Tuple[Engine, Engine]:
     """Create Engines for training and evaluation.
 
     Parameters

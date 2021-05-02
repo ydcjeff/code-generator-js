@@ -2,15 +2,15 @@
   "to_save": {
     "description": "What do you want to save?",
     "options": {
-      "models": {
+      "model": {
         "type": "checkbox",
         "description": "This will save all the models."
       },
-      "optimizers": {
+      "optimizer": {
         "type": "checkbox",
         "description": "This will save all the optimizers."
       },
-      "schedulers": {
+      "lr_scheduler": {
         "type": "checkbox",
         "description": "This will save all the LR schedulers."
       },

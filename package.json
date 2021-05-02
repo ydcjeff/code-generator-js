@@ -5,7 +5,9 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "fmt": "prettier --write ."
+    "black": "black src/templates -l 80",
+    "isort": "isort src/templates",
+    "fmt": "prettier --write . && pnpm run black && pnpm run isort"
   },
   "devDependencies": {
     "jszip": "^3.6.0",

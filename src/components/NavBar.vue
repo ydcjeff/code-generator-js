@@ -158,24 +158,24 @@ import JSZip from 'jszip'
 
 export default {
   setup() {
-    return { version }
-  },
-  methods: {
-    downloadFiles() {
-      if (
-        !(
-          store.config.constructor === Object &&
-          Object.keys(store.config).length === 0
-        )
-      ) {
-        let zip = new JSZip()
-        const data = JSON.stringify(store.config)
-        zip.file('config.json', data)
-        zip.generateAsync({ type: 'blob' }).then(function (content) {
-          saveAs(content, 'config.zip')
-        })
-      }
+    return { version, downloadFiles }
+  }
+}
+
+function downloadFiles() {
+  if (
+    !(
+      store.config.constructor === Object &&
+      Object.keys(store.config).length === 0
+    )
+  ) {
+    let zip = new JSZip()
+    for (const file in store.code) {
+      zip.file(file, store.code[file])
     }
+    zip.generateAsync({ type: 'blob' }).then(function (content) {
+      saveAs(content, 'ignite-project.zip')
+    })
   }
 }
 </script>

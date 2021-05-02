@@ -6,7 +6,6 @@ import readme from './templates/README.md?raw'
 import requirements from './templates/requirements.txt?raw'
 import trainers from './templates/trainers.py?raw'
 import utils from './templates/utils.py?raw'
-import patch from './templates/_patch.py?raw'
 
 export const store = reactive({
   config: {},
@@ -63,36 +62,40 @@ function generateConfig() {
     const key = Object.keys(modelObj)
     store.config['model'] = modelObj[key[0]]
   }
-  for (const key of ['filename_prefix', 'dirname', 'n_saved']) [
+  for (const key of ['filename_prefix', 'dirname', 'n_saved']) {
     store.config[key] = store._config[key]
-  ]
-  return JSON.stringify(store.config, null, 2)
+  }
+  store.code['config.json'] = JSON.stringify(store.config, null, 2)
+  return store.code['config.json']
 }
 
 function generateDatasets() {
-  return datasets
+  store.code['datasets.py'] = datasets
+  return store.code['datasets.py']
 }
 
 function generateMain() {
   const hasToSave = store._config.to_save
   store.code['main.py'] = main
-  let toSaveCode = 'to_save = { '
   if (hasToSave) {
+    let to_save_train = ''
     for (const key in hasToSave) {
       if (hasToSave[key]) {
-        toSaveCode += `'${key}': ${key}, `
+        to_save_train += `'${key}': ${key}, `
       }
     }
-    toSaveCode += '}'
-    toSaveCode += '\n    handler = checkpoint_training(to_save, config)'
-    store.code['main.py'] = main.replaceAll('# checkpoint_training', toSaveCode)
+
+    let toSaveCode = `to_save_train = { ${to_save_train} }
+    to_save_eval = { 'model': model }
+    ckpt_handler_train, ckpt_handler_eval = checkpointing(to_save_train, to_save_eval, config)`
+    store.code['main.py'] = main.replaceAll('# checkpointing', toSaveCode)
   }
-  return store.code['main.py'] 
+  return store.code['main.py']
 }
 
 function generateModels() {
   const visionModel = store._config['vision']
-  let modelsCode = ''
+  let modelsCode = models
 
   if (visionModel) {
     const subDomain = Object.keys(visionModel)
@@ -105,6 +108,7 @@ function generateModels() {
   } else {
     modelsCode = models
   }
+  store.code['models.py'] = modelsCode
   return modelsCode
 }
 
@@ -123,7 +127,7 @@ function generateReadme() {
     if (nnodes === 1 || !nnodes) {
       tempReadme = readme.replaceAll(
         cmdRegex,
-        launch + ` --nproc_per_node ${nproc_per_node} main.py`
+        launch + ` --nproc_per_node ${nproc_per_node} main.py --backend nccl`
       )
     }
     // multi node
@@ -133,7 +137,7 @@ function generateReadme() {
         ` --nnodes ${nnodes}` +
         ` --master_addr ${master_addr}` +
         ` --master_port ${master_port}` +
-        ' main.py'
+        ' main.py --backend nccl'
 
       tempReadme = readme.replaceAll(cmdRegex, launch + multinode)
     }
@@ -143,29 +147,32 @@ function generateReadme() {
 }
 
 function generateRequirements() {
-  return requirements
+  store.code['requirements.txt'] = requirements
+  return store.code['requirements.txt']
 }
 
 function generateTrainers() {
+  store.code['trainers.py'] = trainers
   if (store._config['deterministic']) {
-    return trainers.replaceAll('Engine', 'DeterministicEngine')
+    store.code['trainers.py'] = trainers.replaceAll(
+      'Engine',
+      'DeterministicEngine'
+    )
   }
-  return trainers
+  return store.code['trainers.py']
 }
 
 function generateUtils() {
   const hasToSave = store._config.to_save
-  let tempCode = utils
-  let patchCode
+  let tempCode = utils.split('### ')
+  tempCode = Object.fromEntries(tempCode.map((value) => value.split(' ###')))
   if (hasToSave) {
-    if (Object.values(hasToSave).some((value) => value === true)) {
-      tempCode = utils.split('###')
-      patchCode = patch.split('###\n')
-      tempCode[1] += patchCode[1]
-      tempCode.push(patchCode[2])
-      tempCode = tempCode.join('\n')
+    if (Object.values(hasToSave).every((value) => value === false)) {
+      delete tempCode.checkpointing
     }
+  } else {
+    delete tempCode.checkpointing
   }
-  store.code['utils.py'] = tempCode
+  store.code['utils.py'] = Object.values(tempCode).join('')
   return store.code['utils.py']
 }
