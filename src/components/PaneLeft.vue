@@ -1,6 +1,6 @@
 <template>
   <div class="left-pane-tabs">
-    <button
+    <div
       v-for="tab in tabs"
       :key="tab"
       class="left-pane-tab"
@@ -8,7 +8,7 @@
       @click="currentTab = tab"
     >
       {{ tab }}
-    </button>
+    </div>
   </div>
   <div class="left-pane-contexts">
     <KeepAlive>
@@ -42,7 +42,6 @@ export default {
 
 <style scoped>
 .left-pane-tabs {
-  padding: 2px 0;
   border-bottom: 1px solid var(--c-white-dark);
 }
 .left-pane-tabs,
@@ -50,20 +49,20 @@ export default {
   padding-left: 1.5rem;
 }
 .left-pane-tab {
+  display: inline-block;
+  background-color: var(--c-white);
   cursor: pointer;
+  color: var(--c-text);
   font-family: var(--font-family-base);
   font-size: var(--font-size);
   text-align: center;
-  border-radius: 4px;
   padding: 0.4rem 0.8rem;
-  margin: 2px;
-  transition: background-color 0.1s ease-in;
+  border-bottom: 3px solid transparent;
 }
 .left-pane-tab:hover,
 .active {
-  background-color: var(--c-brand-red);
-  color: var(--c-white-light);
-  transition: background-color 0.25s ease-in-out;
+  color: var(--c-brand-red);
+  border-bottom-color: var(--c-brand-red);
 }
 .left-pane-contexts {
   height: 100vh;

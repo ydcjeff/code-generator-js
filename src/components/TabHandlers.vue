@@ -14,7 +14,7 @@
           :type="value.type"
           :value="key"
           v-model="toSave[key]"
-          @change="saveConfig('to_save', toSave)"
+          @change="saveConfig(to_save.name, toSave)"
         />
         {{ titleCase(key) }} ({{ value.description }})</label
       >
@@ -58,18 +58,28 @@
 
 <script>
 import { ref } from 'vue'
-import handlers from '../metadata/handlers.json'
+import {
+  to_save,
+  filename_prefix,
+  n_saved,
+  terminate_on_nan,
+  limit_sec
+} from '../metadata/utils.json'
 import { saveConfig } from '../store'
-const { to_save, ...restHandlers } = handlers
+import FormInput from './FormInput.vue'
+import FormCheckbox from './FormCheckbox.vue'
 
 export default {
+  components: { FormInput, FormCheckbox },
   setup() {
-    const restHandlersObj = {}
-    for (const k of Object.keys(restHandlers)) {
-      restHandlersObj[k] = ''
-    }
-    const restHandlersValue = ref(restHandlersObj)
+    const restHandlersValue = ref({
+      filename_prefix: '',
+      n_saved: '',
+      terminate_on_nan: '',
+      limit_sec: ''
+    })
     const toSave = ref({})
+    const restHandlers = [terminate_on_nan, filename_prefix, n_saved, limit_sec]
 
     return {
       to_save,

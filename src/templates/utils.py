@@ -8,16 +8,39 @@ import torch
 from ignite.contrib.handlers import PiecewiseLinear
 from ignite.contrib.handlers.param_scheduler import ParamScheduler
 from ignite.engine import Engine
-from ignite.engine.engine import Engine
 from ignite.handlers import Checkpoint
 from ignite.utils import setup_logger
 from models import get_model
 from torch.nn import CrossEntropyLoss, Module
-from torch.optim import SGD, Optimizer
+from torch.optim import Adam, Optimizer
 from torch.optim.lr_scheduler import _LRScheduler
-from torch.optim.optimizer import Optimizer
 
-# --- default utils start ---
+
+### checkpointing ###
+def checkpointing(to_save_train: dict, to_save_eval: dict, config: Any):
+    from ignite.handlers import DiskSaver, global_step_from_engine
+
+    saver = DiskSaver(config.output_dir / "checkpoints", require_empty=False)
+    ckpt_handler_train = Checkpoint(
+        to_save_train,
+        saver,
+        filename_prefix=config.filename_prefix,
+        n_saved=config.n_saved,
+    )
+    global_step_transform = None
+    if to_save_train.get("trainer", None) is not None:
+        global_step_transform = global_step_from_engine(
+            to_save_train["trainer"]
+        )
+    ckpt_handler_eval = Checkpoint(
+        to_save_eval,
+        saver,
+        filename_prefix="best",
+        n_saved=config.n_saved,
+        global_step_transform=global_step_transform,
+    )
+    return ckpt_handler_train, ckpt_handler_eval
+
 
 ### get_default_parser ###
 def get_default_parser():
@@ -51,23 +74,9 @@ def initialize(
     model, optimizer, loss_fn, lr_scheduler
     """
     model = get_model(config.model)
-    optimizer = SGD(
-        model.parameters(),
-        lr=config.lr,
-        momentum=config.momentum,
-        weight_decay=config.weight_decay,
-        nesterov=True,
-    )
+    optimizer = Adam(model.parameters(), lr=config.lr)
     loss_fn = CrossEntropyLoss().to(idist.device())
-    le = config.num_iters_per_epoch
-    milestones_values = [
-        (0, 0.0),
-        (le * config.num_warmup_epochs, config.lr),
-        (le * config.max_epochs, 0.0),
-    ]
-    lr_scheduler = PiecewiseLinear(
-        optimizer, param_name="lr", milestones_values=milestones_values
-    )
+    lr_scheduler = None
     model = idist.auto_model(model)
     optimizer = idist.auto_optim(optimizer)
     loss_fn = loss_fn.to(idist.device())
@@ -161,36 +170,3 @@ def setup_logging(config: Any) -> Logger:
         filepath=config.output_dir / "training-info.log",
     )
     return logger
-
-
-# --- default utils end ---
-
-# --- extra utils start ---
-
-### checkpointing ###
-def checkpointing(to_save_train: dict, to_save_eval: dict, config: Any):
-    from ignite.handlers import DiskSaver, global_step_from_engine
-
-    saver = DiskSaver(config.output_dir / "checkpoints", require_empty=False)
-    ckpt_handler_train = Checkpoint(
-        to_save_train,
-        saver,
-        filename_prefix=config.filename_prefix,
-        n_saved=config.n_saved,
-    )
-    global_step_transform = None
-    if to_save_train.get("trainer", None) is not None:
-        global_step_transform = global_step_from_engine(
-            to_save_train["trainer"]
-        )
-    ckpt_handler_eval = Checkpoint(
-        to_save_eval,
-        saver,
-        filename_prefix="best",
-        n_saved=config.n_saved,
-        global_step_transform=global_step_transform,
-    )
-    return ckpt_handler_train, ckpt_handler_eval
-
-
-# --- extra utils end ---

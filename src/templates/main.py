@@ -84,17 +84,26 @@ def run(local_rank: int, config: Any):
     evaluator.logger = logger
 
     # ignite handlers and ignite loggers
-    # checkpointing
+    ### checkpointing ###
+    from utils import checkpointing
+
+    to_save_train = {}
+    to_save_eval = {"model": model}
+    ckpt_handler_train, ckpt_handler_eval = checkpointing(
+        to_save_train, to_save_eval, config
+    )
+    trainer.add_event_handler(
+        Events.ITERATION_COMPLETED(every=config.log_every_iters),
+        ckpt_handler_train,
+    )
+    evaluator.add_event_handler(
+        Events.EPOCH_COMPLETED(every=1), ckpt_handler_eval
+    )
 
     # setup experiment tracking logger only on rank 0
     if rank == 0:
-        # exp_logger
-        logger_handler = get_logger(
-            config=config,
-            trainer=trainer,
-            evaluator=evaluator,
-            optimizers=optimizer,
-        )
+        ### exp_logger ###
+        pass
 
     # resume from the saved checkpoints
     if config.resume_from:
@@ -132,15 +141,15 @@ def run(local_rank: int, config: Any):
     )
 
     # close the logger after the training completed / terminated
-    if rank == 0:
-        from ignite.contrib.handlers.wandb_logger import WandBLogger
+    # if rank == 0:
+    #     from ignite.contrib.handlers.wandb_logger import WandBLogger
 
-        if isinstance(logger_handler, WandBLogger):
-            # why handle differently for wandb ?
-            # See : https://github.com/pytorch/ignite/issues/1894
-            logger_handler.finish()
-        elif logger_handler:
-            logger_handler.close()
+    #     if isinstance(logger_handler, WandBLogger):
+    #         # why handle differently for wandb ?
+    #         # See : https://github.com/pytorch/ignite/issues/1894
+    #         logger_handler.finish()
+    #     elif logger_handler:
+    #         logger_handler.close()
 
 
 ### main ###

@@ -14,7 +14,7 @@
     </h1>
     <div class="left-side-badges">
       <button
-        @click="downloadFiles"
+        @click="downloadProject"
         class="download-button"
         title="Download the generated code as a zip file"
       >
@@ -158,24 +158,18 @@ import JSZip from 'jszip'
 
 export default {
   setup() {
-    return { version, downloadFiles }
-  }
-}
-
-function downloadFiles() {
-  if (
-    !(
-      store.config.constructor === Object &&
-      Object.keys(store.config).length === 0
-    )
-  ) {
     let zip = new JSZip()
-    for (const file in store.code) {
-      zip.file(file, store.code[file])
+
+    const downloadProject = () => {
+      for (const filename in store.code) {
+        zip.file(filename, store.code[filename])
+      }
+      zip.generateAsync({ type: 'blob' }).then((content) => {
+        saveAs(content, 'ignite-project.zip')
+      })
     }
-    zip.generateAsync({ type: 'blob' }).then(function (content) {
-      saveAs(content, 'ignite-project.zip')
-    })
+
+    return { version, downloadProject }
   }
 }
 </script>

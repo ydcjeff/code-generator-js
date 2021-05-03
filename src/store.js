@@ -5,17 +5,19 @@ import models from './templates/models.py?raw'
 import readme from './templates/README.md?raw'
 import requirements from './templates/requirements.txt?raw'
 import trainers from './templates/trainers.py?raw'
-import utils from './templates/utils.py?raw'
+import utilsPy from './templates/utils.py?raw'
+import utilsJSON from './metadata/utils.json'
+import configJSON from './templates/config.json'
 
 export const store = reactive({
-  config: {},
-  _config: {},
-  code: {}
+  code: {},
+  config: configJSON,
+  _config: {}
 })
 
 export function saveConfig(key, value) {
-  if (store._config[key] === undefined || store._config[key] !== value) {
-    store._config[key] = value
+  if (store.config[key] === undefined || store.config[key] !== value) {
+    store.config[key] = value
   }
 }
 
@@ -75,21 +77,24 @@ function generateDatasets() {
 }
 
 function generateMain() {
-  const hasToSave = store._config.to_save
-  store.code['main.py'] = main
+  let tempCode = splitCode(main)
+  const { to_save } = utilsJSON
+
+  const hasToSave = store._config[to_save.name]
   if (hasToSave) {
-    let to_save_train = ''
+    let toSaveTrain = ''
     for (const key in hasToSave) {
       if (hasToSave[key]) {
-        to_save_train += `'${key}': ${key}, `
+        toSaveTrain += `'${key}': ${key}, `
       }
     }
 
-    let toSaveCode = `to_save_train = { ${to_save_train} }
-    to_save_eval = { 'model': model }
-    ckpt_handler_train, ckpt_handler_eval = checkpointing(to_save_train, to_save_eval, config)`
-    store.code['main.py'] = main.replaceAll('# checkpointing', toSaveCode)
+    tempCode[to_save.value] = tempCode[to_save.value].replaceAll(
+      '{}',
+      `{ ${toSaveTrain} }`
+    )
   }
+  store.code['main.py'] = Object.values(tempCode).join('#')
   return store.code['main.py']
 }
 
@@ -109,7 +114,7 @@ function generateModels() {
     modelsCode = models
   }
   store.code['models.py'] = modelsCode
-  return modelsCode
+  return store.code['models.py']
 }
 
 function generateReadme() {
@@ -163,16 +168,27 @@ function generateTrainers() {
 }
 
 function generateUtils() {
-  const hasToSave = store._config.to_save
-  let tempCode = utils.split('### ')
-  tempCode = Object.fromEntries(tempCode.map((value) => value.split(' ###')))
+  let tempCode = splitCode(utilsPy)
+  const { to_save } = utilsJSON
+
+  // to_save from utils.json
+  const hasToSave = store._config[to_save.name]
   if (hasToSave) {
     if (Object.values(hasToSave).every((value) => value === false)) {
-      delete tempCode.checkpointing
+      delete tempCode[to_save.value]
     }
   } else {
-    delete tempCode.checkpointing
+    delete tempCode[to_save.value]
   }
-  store.code['utils.py'] = Object.values(tempCode).join('')
+
+  store.code['utils.py'] = Object.values(tempCode).join('#')
   return store.code['utils.py']
+}
+
+function splitCode(rawCode) {
+  const arrCode = rawCode
+    .split('### ')
+    .slice(1)
+    .map((value) => value.split(' ###'))
+  return Object.fromEntries(arrCode)
 }

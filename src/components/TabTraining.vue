@@ -2,45 +2,11 @@
   <div class="tab training">
     <h1>Training Options</h1>
     <h2 class="training">Deterministic Training</h2>
-    <label :for="deterministic.name">
-      <input
-        :name="deterministic.name"
-        :id="deterministic.name"
-        :type="deterministic.type"
-        v-model="isDeterministic"
-        @change="saveDeterministic"
-      />
-      {{ deterministic.description }}
-      <code>{{ deterministic.name }}</code></label
-    >
+    <FormCheckbox :label="deterministic.description" :saveKey="deterministic.name" />
     <h2 class="training">Distributed Training</h2>
-    <div
-      v-for="(d, index) in distributedConfigs"
-      :key="index"
-      class="inputs-wrapper distributed"
-    >
-      <label :for="d.name"
-        >{{ d.description }} <code>{{ d.name }}</code></label
-      >
-      <input
-        :name="d.name"
-        :type="d.type"
-        :id="d.name"
-        :min="d.min"
-        v-if="d.type === 'number'"
-        v-model.number="distributedValue[d.name]"
-        @change="saveDistributed(d.name, distributedValue[d.name])"
-      />
-      <input
-        :name="d.name"
-        :type="d.type"
-        :id="d.name"
-        v-else
-        v-model.trim="distributedValue[d.name]"
-        @change="saveDistributed(d.name, distributedValue[d.name])"
-      />
-      <span class="expand"></span>
-    </div>
+    <template v-for="(d, index) in distributedConfigs" :key="index">
+      <FormInput :label="d.description" :type="d.type" :saveKey="d.name" />
+    </template>
   </div>
 </template>
 
@@ -53,9 +19,13 @@ import {
   master_addr,
   master_port
 } from '../metadata/training.json'
-import { saveConfig } from '../store'
+import FormCheckbox from './FormCheckbox.vue'
+import FormInput from './FormInput.vue'
+
+
 
 export default {
+  components: { FormCheckbox, FormInput },
   setup() {
     const isDeterministic = ref(false)
     const distributedValue = ref({})
@@ -91,16 +61,5 @@ function saveDistributed(key, value) {
 
 .training {
   margin-bottom: 0;
-}
-.training ~ label {
-  display: block;
-  margin-top: 0.5rem;
-  width: max-content;
-}
-.tab .distributed label {
-  display: block;
-  margin-top: 0.5rem;
-  margin-bottom: 0.25rem;
-  width: max-content;
 }
 </style>

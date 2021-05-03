@@ -2,66 +2,30 @@
   <div class="tab models">
     <h1>Model Selection</h1>
     <div class="domain">
-      <h2><label for="domain-select">Domain</label></h2>
-      <select
-        name="domain"
-        id="domain-select"
-        v-model="selectedDomain"
-        @change="domainChange"
-      >
-        <option disabled value="">--- Please select an option ---</option>
-        <option
-          :value="domain"
-          :key="index"
-          v-for="(domain, index) of Object.keys(domainsObj)"
-        >
-          {{ domain }}
-        </option>
-      </select>
-    </div>
-    <div class="subdomain" v-if="selectedDomain">
-      <h3>
-        <label for="subdomain-select">{{ selectedDomain }} Sub Domains</label>
-      </h3>
-      <select
-        name="subdomain"
-        id="subdomain-select"
-        v-model="selectedSubDomain"
-        @change="subDomainChange"
-      >
-        <option disabled value="">--- Please select a subdomain ---</option>
-        <option
-          :value="subDomain"
-          :key="index"
-          v-for="(subDomain, index) of Object.keys(domainsObj[selectedDomain])"
-        >
-          {{ subDomain }}
-        </option>
-      </select>
-    </div>
-    <div class="model" v-if="selectedSubDomain">
-      <h4>
-        <label for="model-select"
-          >{{ selectedSubDomain }} Available Models</label
-        >
-      </h4>
-      <select
-        name="model"
-        id="model-select"
-        v-model="selectedModel"
-        @change="saveModel"
-      >
-        <option disabled value="">--- Please select a model ---</option>
-        <option
-          :value="model"
-          :key="index"
-          v-for="(model, index) in domainsObj[selectedDomain][
-            selectedSubDomain
-          ]"
-        >
-          {{ model }}
-        </option>
-      </select>
+      <FormSelect
+        required
+        saveKey="domain"
+        :label="labelDomain"
+        :options="optionsDomain"
+        @change.prevent="domainChange"
+      />
+      <template v-if="selectedDomain">
+        <FormSelect
+          required
+          saveKey="subdomain"
+          :label="labalSubDomain"
+          :options="optionsSubDomain"
+          @change.prevent="subDomainChange"
+        />
+      </template>
+      <template v-if="selectedSubDomain">
+        <FormSelect
+          required
+          saveKey="model"
+          :label="labelModel"
+          :options="optionsModel"
+        />
+      </template>
     </div>
     <a
       class="learn-more"
@@ -77,49 +41,60 @@
 <script>
 import vision from '../metadata/models/vision.json'
 import text from '../metadata/models/text.json'
-import { saveConfig } from '../store'
 import { computed, ref } from 'vue'
+import FormSelect from './FormSelect.vue'
+import { store } from '../store.js'
 
 export default {
+  components: { FormSelect },
   setup() {
-    const selectedDomain = ref('')
-    const selectedSubDomain = ref('')
-    const selectedModel = ref('')
-    const domainsObj = { Vision: vision, Text: text, Audio: {} }
+    const domainsObj = { vision: vision, text: text, audio: {} }
+    const labelDomain = 'Choose domain'
+    const labalSubDomain = 'Choose subdomain'
+    const labelModel = 'Choose model'
+    const optionsDomain = Object.keys(domainsObj)
     const urls = {
       Vision: 'https://pytorch.org/vision/stable/models.html',
       Text: '',
       Audio: ''
     }
+    const selectedDomain = ref('')
+    const selectedSubDomain = ref('')
+    const selectedModel = ref('')
 
     // computed properties
     const domainChange = computed(() => {
-      if (selectedSubDomain.value) {
-        selectedSubDomain.value = ''
-        selectedModel.value = ''
-      }
+      selectedDomain.value = store.config.domain
     })
     const subDomainChange = computed(() => {
-      if (selectedModel.value) {
-        selectedModel.value = ''
+      selectedSubDomain.value = store.config.subdomain
+    })
+    const optionsSubDomain = computed(() => {
+      if (selectedDomain.value) {
+        return Object.keys(domainsObj[selectedDomain.value])
       }
     })
-    const saveModel = computed(() => {
-      const subDomainModel = {}
-      subDomainModel[selectedSubDomain.value.toLowerCase()] =
-        selectedModel.value
-      saveConfig(selectedDomain.value.toLowerCase(), subDomainModel)
+    const optionsModel = computed(() => {
+      // alert('optionsModel')
+      if (selectedSubDomain.value) {
+        return domainsObj[selectedDomain.value][selectedSubDomain.value]
+      }
     })
 
     return {
+      labelDomain,
+      labalSubDomain,
+      labelModel,
       selectedDomain,
       selectedSubDomain,
       selectedModel,
+      optionsDomain,
+      optionsSubDomain,
+      optionsModel,
       domainsObj,
       urls,
       domainChange,
-      subDomainChange,
-      saveModel
+      subDomainChange
     }
   }
 }
@@ -128,11 +103,6 @@ export default {
 <style scoped>
 @import url('../assets/main.css');
 
-.domain,
-.subdomain,
-.model {
-  position: relative;
-}
 .domain h2 {
   margin-bottom: 0;
 }
@@ -141,33 +111,6 @@ export default {
 }
 .model h4 {
   margin-bottom: 0.5rem;
-}
-.domain select,
-.subdomain select,
-.model select {
-  appearance: none;
-  background: var(--c-white-light);
-  border-radius: 3px;
-  color: var(--c-text);
-  cursor: pointer;
-  font-family: var(--font-family-base);
-  font-size: var(--font-size);
-  padding: 0.5rem 1rem;
-  text-align: center;
-  width: 100%;
-}
-.domain::after,
-.subdomain::after,
-.model::after {
-  content: '';
-  position: absolute;
-  right: 1rem;
-  bottom: 16px;
-  border-top: 6px solid var(--c-brand-red);
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 0;
-  vertical-align: middle;
 }
 .learn-more {
   display: block;

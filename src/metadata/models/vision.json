@@ -1,8 +1,8 @@
 {
-  "Classification": [
-    "alexnet",
-    "densenet121",
-    "densenet161",
+  "classification": [
+  "alexnet",
+  "densenet121",
+  "densenet161",
     "densenet169",
     "densenet201",
     "googlenet",
@@ -38,7 +38,7 @@
     "vgg19_bn",
     "vgg19"
   ],
-  "Detection": [
+  "detection": [
     "fasterrcnn_resnet50_fpn",
     "fasterrcnn_mobilenet_v3_large_320_fpn",
     "fasterrcnn_mobilenet_v3_large_fpn",
@@ -46,7 +46,7 @@
     "keypointrcnn_resnet50_fpn",
     "retinanet_resnet50_fpn"
   ],
-  "Segmentation": [
+  "segmentation": [
     "fcn_resnet50",
     "fcn_resnet101",
     "deeplabv3_resnet50",

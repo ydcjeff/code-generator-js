@@ -1,33 +1,44 @@
 <template>
-  <ConfigComponent
-    title="Ignite Loggers Options"
-    :configsFromFile="loggers"
-    @add-config="addConfig"
-  ></ConfigComponent>
+  <div class="tab loggers">
+    <h1>Ignite Loggers Selection</h1>
+    <FormInput
+      type="text"
+      :label="output_dir.description"
+      :saveKey="output_dir.name"
+      required
+    />
+    <FormSelect
+      :label="logger.description"
+      :options="logger.options"
+      :saveKey="logger.name"
+    />
+  </div>
 </template>
 
 <script>
-import ConfigComponent from './configurations/ConfigComponent.vue'
-import loggersConfig from '../metadata/loggers.json'
-import { store } from '../store'
+import { ref } from 'vue'
+import { logger, output_dir } from '../metadata/utils.json'
+import { saveConfig } from '../store'
+import FormSelect from './FormSelect.vue'
+import FormInput from './FormInput.vue'
 
 export default {
-  components: {
-    ConfigComponent
-  },
-  data() {
+  components: { FormInput, FormSelect },
+  setup() {
+    const outputDirValue = ref('')
+    const loggerValue = ref('')
+
     return {
-      loggers: loggersConfig
-    }
-  },
-  methods: {
-    addConfig(key, value) {
-      if (store.config[key] === undefined || store.config[key] !== value) {
-        store.config[key] = value
-      }
+      logger,
+      output_dir,
+      saveConfig,
+      outputDirValue,
+      loggerValue
     }
   }
 }
 </script>
 
-<style></style>
+<style scoped>
+@import url('../assets/main.css');
+</style>
