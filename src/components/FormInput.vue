@@ -1,13 +1,28 @@
 <template>
   <form class="inputs-wrapper" @submit.prevent="saveInput">
-    <h3 class="label-wrapper">
+    <p class="label-wrapper">
       <label :for="inputId">
         {{ label }} – <code>{{ saveKey }}</code> {{ isRequired }}
       </label>
-    </h3>
+    </p>
+    <input
+      minlength="1"
+      v-if="type === 'text'"
+      v-model.trim="inputted"
+      :type="type"
+      :id="inputId"
+      :required="required"
+    />
     <input
       min="0"
-      minlength="1"
+      v-else-if="type === 'number'"
+      v-model.number="inputted"
+      :type="type"
+      :id="inputId"
+      :required="required"
+    />
+    <input
+      v-else
       v-model="inputted"
       :type="type"
       :id="inputId"

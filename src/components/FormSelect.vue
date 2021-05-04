@@ -1,10 +1,10 @@
 <template>
   <form class="selector">
-    <h3>
+    <p>
       <label :for="selectId">
         {{ label }} – <code>{{ saveKey }}</code> {{ isRequired }}
       </label>
-    </h3>
+    </p>
     <select
       :id="selectId"
       :required="required"

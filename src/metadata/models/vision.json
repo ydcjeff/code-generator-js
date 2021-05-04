@@ -1,8 +1,8 @@
 {
   "classification": [
-  "alexnet",
-  "densenet121",
-  "densenet161",
+    "alexnet",
+    "densenet121",
+    "densenet161",
     "densenet169",
     "densenet201",
     "googlenet",

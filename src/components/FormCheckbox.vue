@@ -1,17 +1,23 @@
 <template>
   <form class="checkbox-wrapper">
-    <h3>
+    <p>
       <label :for="checkboxId">
-        <input type="checkbox" :id="checkboxId" :required="required" v-model="checked" @change="saveChecked">
+        <input
+          type="checkbox"
+          :id="checkboxId"
+          :required="required"
+          v-model="checked"
+          @change="saveChecked"
+        />
         {{ label }} – <code>{{ saveKey }}</code> {{ isRequired }}
       </label>
-      </h3>
+    </p>
   </form>
 </template>
 
 <script>
 import { ref, toRefs, computed } from 'vue'
-import { saveConfig } from "../store.js"
+import { saveConfig } from '../store.js'
 
 export default {
   props: {
@@ -36,7 +42,15 @@ export default {
     const checkboxId = computed(() => label.value + '-checkbox')
     const isRequired = computed(() => (required.value ? '*' : ''))
 
-    return { label, saveKey, required, checked, saveChecked, checkboxId, isRequired }
+    return {
+      label,
+      saveKey,
+      required,
+      checked,
+      saveChecked,
+      checkboxId,
+      isRequired
+    }
   }
 }
 </script>

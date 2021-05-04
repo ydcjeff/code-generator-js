@@ -5,22 +5,27 @@
     "value": "checkpointing",
     "options": {
       "model": {
+        "name": "save_model",
         "type": "checkbox",
         "description": "This will save all the models."
       },
       "optimizer": {
+        "name": "save_optimizer",
         "type": "checkbox",
         "description": "This will save all the optimizers."
       },
       "lr_scheduler": {
+        "name": "save_lr_scheduler",
         "type": "checkbox",
         "description": "This will save all the LR schedulers."
       },
       "trainer": {
+        "name": "save_trainer",
         "type": "checkbox",
         "description": "This will save trainer."
       },
       "evaluator": {
+        "name": "save_evaluator",
         "type": "checkbox",
         "description": "This will save evaluator."
       }

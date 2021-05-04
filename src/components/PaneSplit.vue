@@ -21,7 +21,7 @@
 import { ref } from 'vue'
 export default {
   setup() {
-    const width = ref(40)
+    const width = ref(45)
     const isDragging = ref(false)
     const container = ref()
 

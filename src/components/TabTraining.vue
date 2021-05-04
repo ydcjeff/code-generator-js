@@ -2,7 +2,10 @@
   <div class="tab training">
     <h1>Training Options</h1>
     <h2 class="training">Deterministic Training</h2>
-    <FormCheckbox :label="deterministic.description" :saveKey="deterministic.name" />
+    <FormCheckbox
+      :label="deterministic.description"
+      :saveKey="deterministic.name"
+    />
     <h2 class="training">Distributed Training</h2>
     <template v-for="(d, index) in distributedConfigs" :key="index">
       <FormInput :label="d.description" :type="d.type" :saveKey="d.name" />
@@ -21,8 +24,6 @@ import {
 } from '../metadata/training.json'
 import FormCheckbox from './FormCheckbox.vue'
 import FormInput from './FormInput.vue'
-
-
 
 export default {
   components: { FormCheckbox, FormInput },
