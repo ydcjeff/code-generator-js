@@ -78,7 +78,7 @@ function generateConfig() {
 }
 
 function generateDatasets() {
-  store.code['datasets.py'] = datasets
+  store.code['datasets.py'] = datasets.trim()
   return store.code['datasets.py']
 }
 
@@ -155,7 +155,7 @@ function generateReadme() {
 }
 
 function generateRequirements() {
-  store.code['requirements.txt'] = requirements
+  store.code['requirements.txt'] = requirements.trim()
   return store.code['requirements.txt']
 }
 
