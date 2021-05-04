@@ -19,7 +19,7 @@
 
 <script>
 import CodeBlock from './CodeBlock.vue'
-import { getTemplateFileNames, generateCode } from '../store'
+import { getTemplateFileNames, store } from '../store'
 import { computed, ref } from 'vue'
 
 export default {
@@ -32,7 +32,7 @@ export default {
       return currentTab.value.split('.')[1]
     })
     const formattedCode = () => {
-      return generateCode(currentTab.value)
+      return store.code[currentTab.value]
     }
     return { currentTab, tabs, getLang, formattedCode }
   }

@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { reactive, watchEffect } from 'vue'
 import datasets from './templates/datasets.py?raw'
 import main from './templates/main.py?raw'
 import models from './templates/models.py?raw'
@@ -51,6 +51,12 @@ export function generateCode(currentTab) {
   return generateFnArray[index]().trim()
 }
 
+watchEffect(() => {
+  for (const filename of getTemplateFileNames()) {
+    generateCode(filename)
+  }
+})
+
 function generateConfig() {
   // model tab
   const subDomains = ['vision', 'text', 'audio']
@@ -64,9 +70,9 @@ function generateConfig() {
     const key = Object.keys(modelObj)
     store.config['model'] = modelObj[key[0]]
   }
-  for (const key of ['filename_prefix', 'dirname', 'n_saved']) {
-    store.config[key] = store._config[key]
-  }
+  // for (const key of ['filename_prefix', 'dirname', 'n_saved']) {
+  //   store.config[key] = store._config[key]
+  // }
   store.code['config.json'] = JSON.stringify(store.config, null, 2)
   return store.code['config.json']
 }
@@ -79,50 +85,47 @@ function generateDatasets() {
 function generateMain() {
   let tempCode = splitCode(main)
   const { to_save } = utilsJSON
-
-  const hasToSave = store._config[to_save.name]
-  if (hasToSave) {
-    let toSaveTrain = ''
-    for (const key in hasToSave) {
-      if (hasToSave[key]) {
-        toSaveTrain += `'${key}': ${key}, `
-      }
+  let toSaveTrain = ''
+  // to_save from utils.json
+  let save = []
+  for (const o in to_save.options) {
+    const isTrue = store.config[to_save.options[o].name]
+    if (isTrue) {
+      save.push(isTrue)
+      toSaveTrain += `'${o}': ${o}, `
     }
-
-    tempCode[to_save.value] = tempCode[to_save.value].replaceAll(
-      '{}',
-      `{ ${toSaveTrain} }`
-    )
   }
-  store.code['main.py'] = Object.values(tempCode).join('#')
+  if (save.every((value) => value === true) && save.length > 0) {
+    tempCode.checkpointing = tempCode.checkpointing.replaceAll('{}', `{ ${toSaveTrain} }`)
+  } else {
+    delete tempCode.checkpointing
+  }
+
+  store.code['main.py'] = Object.values(tempCode).join('#').trim()
   return store.code['main.py']
 }
 
 function generateModels() {
-  const visionModel = store._config['vision']
-  let modelsCode = models
+  let tempCode = splitCode(models)
+  const domain = store.config.domain
+  const subdomain = store.config.subdomain
+  const model = store.config.model
 
-  if (visionModel) {
-    const subDomain = Object.keys(visionModel)
-    if (!subDomain.includes('classification')) {
-      modelsCode = models.replaceAll(
-        'models.__dict__',
-        `models.${subDomain.toString()}.__dict__`
-      )
+  if (domain === 'vision') {
+    if (subdomain && subdomain !== 'classification') {
+      tempCode.get_model = tempCode.get_model.replaceAll('models.__dict__', `models.${subdomain.toString()}.__dict__`)
     }
-  } else {
-    modelsCode = models
   }
-  store.code['models.py'] = modelsCode
+  store.code['models.py'] = Object.values(tempCode).join('#').trim()
   return store.code['models.py']
 }
 
 function generateReadme() {
   const launch = 'python -m torch.distributed.launch'
-  const nproc_per_node = store._config.nproc_per_node
-  const nnodes = store._config.nnodes
-  const master_addr = store._config.master_addr
-  const master_port = store._config.master_port
+  const nproc_per_node = store.config.nproc_per_node
+  const nnodes = store.config.nnodes
+  const master_addr = store.config.master_addr
+  const master_port = store.config.master_port
   let tempReadme = readme
   const cmdRegex = /python.*main.py/gi
 
@@ -147,7 +150,7 @@ function generateReadme() {
       tempReadme = readme.replaceAll(cmdRegex, launch + multinode)
     }
   }
-  store.code['README.md'] = tempReadme
+  store.code['README.md'] = tempReadme.trim()
   return store.code['README.md']
 }
 
@@ -157,8 +160,8 @@ function generateRequirements() {
 }
 
 function generateTrainers() {
-  store.code['trainers.py'] = trainers
-  if (store._config['deterministic']) {
+  store.code['trainers.py'] = trainers.trim()
+  if (store.config['deterministic']) {
     store.code['trainers.py'] = trainers.replaceAll(
       'Engine',
       'DeterministicEngine'
@@ -172,16 +175,18 @@ function generateUtils() {
   const { to_save } = utilsJSON
 
   // to_save from utils.json
-  const hasToSave = store._config[to_save.name]
-  if (hasToSave) {
-    if (Object.values(hasToSave).every((value) => value === false)) {
-      delete tempCode[to_save.value]
+  let save = []
+  for (const o in to_save.options) {
+    const isTrue = store.config[to_save.options[o].name]
+    if (isTrue) {
+      save.push(isTrue)
     }
-  } else {
-    delete tempCode[to_save.value]
+  }
+  if (save.every((value) => value === false) || !save) {
+    delete tempCode.checkpointing
   }
 
-  store.code['utils.py'] = Object.values(tempCode).join('#')
+  store.code['utils.py'] = Object.values(tempCode).join('#').trim()
   return store.code['utils.py']
 }
 

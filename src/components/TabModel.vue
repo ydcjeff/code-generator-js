@@ -7,7 +7,7 @@
         saveKey="domain"
         :label="labelDomain"
         :options="optionsDomain"
-        @change.prevent="domainChange"
+        @change="domainChange"
       />
       <template v-if="selectedDomain">
         <FormSelect
@@ -15,7 +15,7 @@
           saveKey="subdomain"
           :label="labalSubDomain"
           :options="optionsSubDomain"
-          @change.prevent="subDomainChange"
+          @change="subDomainChange"
         />
       </template>
       <template v-if="selectedSubDomain">

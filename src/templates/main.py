@@ -100,9 +100,9 @@ def run(local_rank: int, config: Any):
         Events.EPOCH_COMPLETED(every=1), ckpt_handler_eval
     )
 
+    ### exp_logger ###
     # setup experiment tracking logger only on rank 0
     if rank == 0:
-        ### exp_logger ###
         pass
 
     # resume from the saved checkpoints
